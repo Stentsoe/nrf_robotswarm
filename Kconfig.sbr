@@ -1,0 +1,8 @@
+
+
+menu "Self Balancing Robot"
+
+rsource "subsys/Kconfig"
+rsource "lib/Kconfig"
+
+endmenu

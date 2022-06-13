@@ -1,0 +1,122 @@
+/*
+ * Copyright (c) 2019 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+ &zephyr_udc0 {
+	midi_device {
+		compatible = "usb-midi-device";
+		label = "MIDI";
+
+		midi_interface_1 {
+			compatible = "usb-midi-interface";
+			index = <1>;
+			setting_0 {
+				compatible = "usb-midi-setting";
+				revision = "MIDI 1.0";
+				index = <0>;
+
+				jack_1: jack_1 {
+					label = "USB_MIDI_IN";
+					compatible = "usb-midi-jack-pair";
+					type-out = "EXTERNAL";
+					type-in = "EMBEDDED";
+					id-out = <4>;
+					id-in = <1>;
+				};
+
+				jack_2: jack_2 {
+					label = "USB_MIDI_OUT";
+					compatible = "usb-midi-jack-pair";
+					type-out = "EMBEDDED";
+					type-in = "EXTERNAL";
+					id-out = <3>;
+					id-in = <2>;
+				};
+
+				jack_3: jack_3 {
+					label = "USB_MIDI_IN_2";
+					compatible = "usb-midi-jack-pair";
+					type-out = "EXTERNAL";
+					type-in = "EMBEDDED";
+					id-out = <5>;
+					id-in = <6>;
+				};
+		
+				ep_out_1: endpoint_out_1 {
+					compatible = "usb-midi-endpoint";
+					direction = "OUT";
+					type = "BULK";
+					ep-num = <1>;
+					assoc-entities = <&jack_1 &jack_3>;
+					
+				};
+		
+				ep_in_1: endpoint_in_1 {
+					compatible = "usb-midi-endpoint";
+					direction = "IN";
+					type = "BULK";
+					ep-num = <1>;
+					assoc-entities = <&jack_2>;
+				};
+			};
+			
+			setting_1 {
+				compatible = "usb-midi-setting";
+				revision = "MIDI 2.0";
+				index = <1>;
+
+				ep_out_2: endpoint_out_2 {
+					compatible = "usb-midi-endpoint";
+					direction = "OUT";
+					type = "BULK";
+					ep-num = <5>;
+					assoc-entities = <&gt_1>;
+					
+				};
+		
+				ep_in_2: endpoint_in_2 {
+					compatible = "usb-midi-endpoint";
+					direction = "IN";
+					type = "INTERRUPT";
+					ep-num = <5>;
+					assoc-entities = <&gt_1>;
+					interval = <1>;
+				};
+		
+				gt_1: gt_1 {
+					compatible = "usb-midi-group-terminal-block";
+					id = <1>;
+					type = "IN-OUT";
+					group-terminal = <0>;
+					num-group-terminals = <1>;
+					protocol = "UNKNOWN";
+					in-bandwidth = <1>;
+				};
+			};
+		};
+	};
+};
+
+
+&arduino_serial {
+	current-speed = <31250>;
+    midi_serial_device {
+        label = "SERIAL_MIDI";
+        compatible = "midi-device";
+        midi_serial_in_device{
+            compatible = "midi-serial-in-device";
+            label = "SERIAL_MIDI_IN";
+        };
+    
+        midi_serial_out_device{
+            compatible = "midi-serial-out-device";
+            label = "SERIAL_MIDI_OUT";
+            handle-timestamps;
+        };
+    };
+
+};
+
+

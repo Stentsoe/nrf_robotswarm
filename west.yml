@@ -1,0 +1,28 @@
+
+# The west manifest file for the NCS-MIDI project.
+#
+# The per-installation west configuration file specifies the location of this
+# manifest file. The "path" option in the [manifest] section of .west/config
+# defines the folder that contains west.yml. The path is relative to the folder
+# that contains .west.
+#
+
+manifest:
+  version: "0.12"
+  remotes:
+      # nRF Connect SDK base URL.
+    - name: ncs
+      url-base: https://github.com/nrfconnect
+  # The list of external projects for the nRF Connect SDK.
+  #
+  projects:
+    - name: nrf
+      remote: ncs
+      repo-path: sdk-nrf
+      revision: 69bfabb5a6248d306977d8247084d4b6ddf405ed
+      import: true
+  # Committed on Oct 15 
+
+# West-related configuration for the nrf_midi_priv repository.
+  self:
+    path: nrf_self_balancing_robot

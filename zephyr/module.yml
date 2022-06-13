@@ -1,0 +1,5 @@
+build:
+  cmake: .
+  kconfig: Kconfig.sbr
+  settings:
+    dts_root: .
