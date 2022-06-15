@@ -17,6 +17,7 @@ target_sources(app PRIVATE src/main.c)
 
 add_subdirectory(src/modules)
 add_subdirectory(src/events)
+add_subdirectory(drivers)
 
 
 
