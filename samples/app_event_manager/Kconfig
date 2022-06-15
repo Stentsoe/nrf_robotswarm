@@ -1,0 +1,28 @@
+#
+# Copyright (c) 2021 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Gateway"
+
+config GATEWAY_APP_VERSION
+	string "Asset Tracker application firmware version"
+	default "0.0.0-development"
+
+config GATEWAY_APP_VERSION_MAX_LEN
+	int "Maximum length of the application firmware version"
+	default 150
+
+rsource "src/modules/Kconfig.common"
+rsource "src/modules/Kconfig.mqtt"
+
+endmenu
+
+menu "Zephyr Kernel"
+source "Kconfig.zephyr"
+endmenu
+
+# module = APPLICATION_MODULE
+# module-str = Application module
+# source "subsys/logging/Kconfig.template.log_config"
