@@ -5,6 +5,5 @@
 #
 
 target_sources(app PRIVATE
-		mqtt_event.c
-		module_state_event.c
+	module_state_event.c
 )
