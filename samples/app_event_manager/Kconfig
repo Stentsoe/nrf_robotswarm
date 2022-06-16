@@ -16,6 +16,7 @@ config GATEWAY_APP_VERSION_MAX_LEN
 
 rsource "src/modules/Kconfig.common"
 rsource "src/modules/Kconfig.mqtt"
+rsource "drivers/tb6612fng/Kconfig"
 
 endmenu
 

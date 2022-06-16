@@ -1,0 +1,15 @@
+menu "TB6612FNG driver"
+config TB6612FNG
+    bool "Enable TB6612FNG dual brushed DC motor driver"
+    depends on PWM && GPIO
+
+if TB6612FNG
+    module = TB6612FNG_DRIVER
+    module-str = TB6612FNG driver
+    source "subsys/logging/Kconfig.template.log_config"
+
+    module = TB6612FNG_MOTOR_DRIVER
+    module-str = TB6612FNG motor driver
+    source "subsys/logging/Kconfig.template.log_config"
+endif
+endmenu
