@@ -1,0 +1,31 @@
+
+# Bindings for the toshiba tb6612fng dual brushed dc driver
+
+compatible: "toshiba,tb6612fng"
+description: "Dual brushed DC motor driver"
+
+include: "base.yaml"
+
+properties:
+  standby-gpios: 
+    type: phandle-array
+    required: false
+
+child-binding:
+  compatible: "toshiba,tb6612fng-motor"
+  description: Brushed DC Motor driven by tb6612fng
+
+  include: "base.yaml"
+
+  properties:
+    pwms:
+      type: phandle-array
+      required: true
+    
+    input1-gpios:
+      type: phandle-array
+      required: false
+
+    input2-gpios:
+      type: phandle-array
+      required: false
