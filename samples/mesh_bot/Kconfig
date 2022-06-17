@@ -4,18 +4,19 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "Gateway"
+menu "Mesh robot"
 
-config GATEWAY_APP_VERSION
-	string "Asset Tracker application firmware version"
+config MESH_ROBOT_VERSION
+	string "Mesh robot firmware version"
 	default "0.0.0-development"
 
-config GATEWAY_APP_VERSION_MAX_LEN
+config MESH_ROBOT_VERSION_MAX_LEN
 	int "Maximum length of the application firmware version"
 	default 150
 
+rsource "src/events/Kconfig"
 rsource "src/modules/Kconfig.common"
-rsource "src/modules/Kconfig.mqtt"
+rsource "drivers/tb6612fng/Kconfig"
 
 endmenu
 
@@ -23,6 +24,6 @@ menu "Zephyr Kernel"
 source "Kconfig.zephyr"
 endmenu
 
-# module = APPLICATION_MODULE
-# module-str = Application module
-# source "subsys/logging/Kconfig.template.log_config"
+module = APPLICATION_MODULE
+module-str = Application module
+source "subsys/logging/Kconfig.template.log_config"
