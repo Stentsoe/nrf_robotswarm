@@ -13,7 +13,14 @@ project(mesh_bot)
 zephyr_library_include_directories(src/events)
 
 # NORDIC SDK APP START
-target_sources(app PRIVATE src/main.c)
+target_sources(app PRIVATE 
+    src/main.c
+    src/model_handler.c
+)
+
+include_directories(
+    src
+)
 
 add_subdirectory(src/modules)
 add_subdirectory(src/events)
