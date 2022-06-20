@@ -6,5 +6,6 @@
 
 target_include_directories(app PRIVATE .)
 target_sources(app PRIVATE
+	ui_module.c
 	modules_common.c
 )
