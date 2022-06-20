@@ -36,10 +36,18 @@ static void set_module_state(enum mesh_module_state new_state)
 
 static void movement_received_handler(struct robot_movement_config *movement) {
     LOG_DBG("Movement received: Time:%d  Angle:%d", movement->time, movement->angle);
+    struct mesh_module_event *evt = new_mesh_module_event();
+    evt->type = MESH_EVT_MOVEMENT_RECEIVED;
+    evt->data.movement.time = movement->time;
+    evt->data.movement.angle = movement->angle;
+    APP_EVENT_SUBMIT(evt);
 }
 
 static void start_movement_handler(void) {
     LOG_DBG("Starting movement");
+    struct mesh_module_event *evt = new_mesh_module_event();
+    evt->type = MESH_EVT_CLEAR_TO_MOVE_RECEIVED;
+    APP_EVENT_SUBMIT(evt);
 }
 
 /* Setup */
@@ -69,6 +77,7 @@ static int setup_mesh()
     err = bt_mesh_prov_enable(BT_MESH_PROV_ADV | BT_MESH_PROV_GATT);
     if (err == -EALREADY) {
         LOG_DBG("Device already provisioned");
+        set_module_state(PROVISIONED);
     }
     LOG_DBG("Mesh initialized");
     return 0;

@@ -7,6 +7,8 @@ static char *type_to_str(mesh_module_event_type type)
     {
     case MESH_EVT_MOVEMENT_RECEIVED:
         return "MOVEMENT_RECEIVED";
+    case MESH_EVT_CLEAR_TO_MOVE_RECEIVED:
+        return "CLEAR_TO_MOVE_RECEIVED";
     default:
         return "UNKNOWN";
     }
@@ -24,4 +26,6 @@ APP_EVENT_TYPE_DEFINE(
     mesh_module_event,
     log_mesh_event,
     NULL,
-    APP_EVENT_FLAGS_CREATE());
+    APP_EVENT_FLAGS_CREATE(
+			IF_ENABLED(CONFIG_LOG_MESH_MODULE_EVENT,
+				(APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));

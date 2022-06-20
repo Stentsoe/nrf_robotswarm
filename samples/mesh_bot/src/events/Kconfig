@@ -14,6 +14,13 @@ config BRIDGE_LOG_MODULE_STATE_EVENT
 	bool "Module state event"
 	default y
 
+config LOG_MESH_MODULE_EVENT
+	bool "Mesh module event"
+	default n
+
+config LOG_MOTOR_MODULE_EVENT
+	bool "Motor module event"
+	default n
 
 endmenu
 
