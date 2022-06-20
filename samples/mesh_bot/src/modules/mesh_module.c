@@ -78,6 +78,9 @@ static int setup_mesh()
     if (err == -EALREADY) {
         LOG_DBG("Device already provisioned");
         set_module_state(PROVISIONED);
+        struct mesh_module_event *evt = new_mesh_module_event();
+        evt->type = MESH_EVT_PROVISIONED;
+        APP_EVENT_SUBMIT(evt);
     }
     LOG_DBG("Mesh initialized");
     return 0;
