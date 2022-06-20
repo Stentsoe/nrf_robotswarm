@@ -38,6 +38,10 @@ static void movement_received_handler(struct robot_movement_config *movement) {
     LOG_DBG("Movement received: Time:%d  Angle:%d", movement->time, movement->angle);
 }
 
+static void start_movement_handler(void) {
+    LOG_DBG("Starting movement");
+}
+
 /* Setup */
 
 static int setup_mesh()
@@ -49,7 +53,7 @@ static int setup_mesh()
         return err;
     }
     LOG_DBG("Bluetooth initialized");
-    err = bt_mesh_init(bt_mesh_dk_prov_init(), model_handler_init(movement_received_handler));
+    err = bt_mesh_init(bt_mesh_dk_prov_init(), model_handler_init(movement_received_handler, start_movement_handler));
     if (err) {
         LOG_ERR("Failed to initialize mesh: Error %d", err);
         return err;

@@ -6,6 +6,7 @@
 /* Application handler functions */
 
 movement_received_handler_t app_movement_handler;
+start_movement_handler_t app_start_movement_handler;
 
 /* SIG models */
 
@@ -53,8 +54,19 @@ static int movement_config_recieved(struct bt_mesh_model *model, struct bt_mesh_
     return err;
 }
 
+#define OP_VENDOR_START_MOVEMENT BT_MESH_MODEL_OP_3(0x01, CONFIG_BT_COMPANY_ID)
+
+static int start_movement_recieved(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx, struct net_buf_simple *buf)
+{
+    if (app_start_movement_handler != NULL){
+        app_start_movement_handler();
+    }
+    return 0;
+}
+
 static const struct bt_mesh_model_op movement_server_ops[] = {
     {OP_VENDOR_MOVEMENT_RECIEVED, BT_MESH_LEN_EXACT(sizeof(struct robot_movement_config)), movement_config_recieved},
+    {OP_VENDOR_START_MOVEMENT, BT_MESH_LEN_EXACT(0), start_movement_recieved},
     BT_MESH_MODEL_OP_END,
 };
 
@@ -73,8 +85,10 @@ static struct bt_mesh_comp comp = {
     .elem_count = ARRAY_SIZE(elements),
 };
 
-const struct bt_mesh_comp *model_handler_init(movement_received_handler_t movement_handler)
+const struct bt_mesh_comp *model_handler_init(movement_received_handler_t movement_handler,
+    start_movement_handler_t start_movement_handler)
 {
     app_movement_handler = movement_handler;
+    app_start_movement_handler = start_movement_handler;
     return &comp;
 }
