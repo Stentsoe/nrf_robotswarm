@@ -10,4 +10,5 @@ include_directories(.)
 target_sources(app PRIVATE
 	module_state_event.c
 	mesh_module_event.c
+	motor_module_event.c
 )
