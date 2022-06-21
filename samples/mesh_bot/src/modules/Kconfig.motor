@@ -1,0 +1,17 @@
+menuconfig MOTOR_MODULE
+    bool "Motor module"
+    default y
+    help
+      Enables motor module.
+
+if MOTOR_MODULE
+
+    config MOTOR_THREAD_STACK_SIZE
+        int "Stack size for motor module thread"
+        default 2048
+
+    module = MOTOR_MODULE
+    module-str = Motor module
+    source "subsys/logging/Kconfig.template.log_config"
+
+endif
