@@ -25,7 +25,7 @@ enum mesh_module_state
     MOVING,
 };
 
-enum mesh_module_state module_state = UNPROVISIONED; // Current state of the module
+static enum mesh_module_state module_state = UNPROVISIONED; // Current state of the module
 
 static void set_module_state(enum mesh_module_state new_state)
 {
