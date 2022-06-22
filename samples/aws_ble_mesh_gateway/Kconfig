@@ -17,6 +17,11 @@ config GATEWAY_APP_VERSION_MAX_LEN
 rsource "src/modules/Kconfig.modules_common"
 rsource "src/modules/Kconfig.modem_module"
 
+module = APPLICATION_MODULE
+module-str = Application module
+source "subsys/logging/Kconfig.template.log_config"
+
+
 endmenu
 
 menu "Zephyr Kernel"
