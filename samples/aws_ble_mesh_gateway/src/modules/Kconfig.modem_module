@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2021 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menu "Modem module"
+
+config MODEM_THREAD_STACK_SIZE
+	int "Modem module thread stack size"
+	default 2048
+
+endmenu
