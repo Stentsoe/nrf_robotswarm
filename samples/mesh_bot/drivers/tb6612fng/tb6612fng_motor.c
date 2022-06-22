@@ -6,7 +6,7 @@
 #include "../motors/motor.h"
 
 #define DT_DRV_COMPAT toshiba_tb6612fng_motor
-#define TB6612FNG_MOTOR_INIT_PRIORITY 41
+#define TB6612FNG_MOTOR_INIT_PRIORITY 60
 
 #include <logging/log.h>
 LOG_MODULE_REGISTER(tb6612fng_motor_driver, CONFIG_TB6612FNG_MOTOR_DRIVER_LOG_LEVEL);
@@ -37,6 +37,9 @@ static int _drive_continous(const struct device *dev, int32_t power)
         { // CCW
             gpio_pin_set_dt(&conf->gpio1, 0);
             gpio_pin_set_dt(&conf->gpio2, 1);
+        } else {
+            gpio_pin_set_dt(&conf->gpio1, 0);
+            gpio_pin_set_dt(&conf->gpio2, 0);
         }
     }
     else if (power < 0)
@@ -46,7 +49,13 @@ static int _drive_continous(const struct device *dev, int32_t power)
 
     int32_t abs_power = power >= 0 ? power : -power;
 
-    pwm_set_pulse_dt(&conf->pwm, abs_power);
+    int err = pwm_set_pulse_dt(&conf->pwm, abs_power);
+    if (err) {
+        LOG_ERR("Failed to set PWM pulse: Error %d", err);
+        return err;
+    }
+
+    LOG_DBG("Setting power on motor %s to %d", dev->name, abs_power);
     return 0;
 }
 
@@ -98,11 +107,12 @@ static int init_gpio(const struct device *dev)
 static int init_pwm(const struct device *dev)
 {
     struct motor_conf *conf = (struct motor_conf *)dev->config;
-    if (conf->pwm.dev == NULL || device_is_ready(conf->pwm.dev))
+    if (!device_is_ready(conf->pwm.dev))
     {
         LOG_ERR("PWM device not found or not ready");
         return -ENODEV;
     }
+    LOG_DBG("Channel %d on PWM %s initialized for motor %s", conf->pwm.channel, conf->pwm.dev->name, dev->name);
     return 0;
 }
 
@@ -120,6 +130,7 @@ static int init_motor(const struct device *dev)
         LOG_ERR("Error while initializig pwm: %d", err);
         return err;
     }
+    LOG_DBG("Motor %s initialized", dev->name);
     return 0;
 }
 

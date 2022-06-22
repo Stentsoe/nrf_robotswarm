@@ -1,0 +1,17 @@
+menuconfig MESH_MODULE
+    bool "Mesh module"
+    default y
+    help
+      Enables mesh module.
+
+if MESH_MODULE
+
+    config MESH_THREAD_STACK_SIZE
+        int "Stack size for mesh module thread"
+        default 2048
+
+    module = MESH_MODULE
+    module-str = Mesh module
+    source "subsys/logging/Kconfig.template.log_config"
+
+endif
