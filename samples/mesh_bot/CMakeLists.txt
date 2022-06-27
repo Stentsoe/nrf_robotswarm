@@ -20,13 +20,10 @@ target_sources(app PRIVATE
 
 include_directories(
     src
+    ../mesh_model_defines
 )
 
 add_subdirectory(src/modules)
 add_subdirectory(src/events)
 add_subdirectory(drivers)
-
-
-
-
 # NORDIC SDK APP END
