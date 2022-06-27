@@ -39,7 +39,7 @@ static const int32_t motor_power = 10000000;
 static const struct device *motor_a = DEVICE_DT_GET(DT_NODELABEL(motor_a));
 static const struct device *motor_b = DEVICE_DT_GET(DT_NODELABEL(motor_b));
 
-struct robot_movement_config next_movement = {0};
+struct robot_movement_set_msg next_movement = {0};
 static int set_next_angle(int32_t angle)
 {
     next_movement.angle = angle;

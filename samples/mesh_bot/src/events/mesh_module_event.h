@@ -14,7 +14,7 @@ struct mesh_module_event {
     struct app_event_header header;
     mesh_module_event_type type;
     union {
-        struct robot_movement_config movement; // Should only be read when type == MESH_EVT_MOVEMENT_RECEIVED
+        struct robot_movement_set_msg movement; // Should only be read when type == MESH_EVT_MOVEMENT_RECEIVED
     } data;
 };
 

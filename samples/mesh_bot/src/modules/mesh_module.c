@@ -34,7 +34,7 @@ static void set_module_state(enum mesh_module_state new_state)
 
 /* Mesh handlers */
 
-static void movement_received_handler(struct robot_movement_config *movement) {
+static void movement_received_handler(struct robot_movement_set_msg *movement) {
     LOG_DBG("Movement received: Time:%d  Angle:%d", movement->time, movement->angle);
     struct mesh_module_event *evt = new_mesh_module_event();
     evt->type = MESH_EVT_MOVEMENT_RECEIVED;

@@ -1,10 +1,10 @@
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/bluetooth/mesh/msg.h>
 
+#include "../../mesh_model_defines/robot_movement_srv.h"
 #include "model_handler.h"
 
 /* Application handler functions */
-
 movement_received_handler_t app_movement_handler;
 start_movement_handler_t app_start_movement_handler;
 
@@ -40,8 +40,6 @@ static struct bt_mesh_model sig_models[] = {
 };
 
 /* Vendor models */
-#define MOVEMENT_SERVER_MODEL_ID 0x0000
-#define OP_VENDOR_MOVEMENT_RECIEVED BT_MESH_MODEL_OP_3(0x00, CONFIG_BT_COMPANY_ID)
 
 static int movement_config_recieved(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx, struct net_buf_simple *buf)
 {
@@ -54,8 +52,6 @@ static int movement_config_recieved(struct bt_mesh_model *model, struct bt_mesh_
     return err;
 }
 
-#define OP_VENDOR_START_MOVEMENT BT_MESH_MODEL_OP_3(0x01, CONFIG_BT_COMPANY_ID)
-
 static int start_movement_recieved(struct bt_mesh_model *model, struct bt_mesh_msg_ctx *ctx, struct net_buf_simple *buf)
 {
     if (app_start_movement_handler != NULL){
@@ -65,13 +61,13 @@ static int start_movement_recieved(struct bt_mesh_model *model, struct bt_mesh_m
 }
 
 static const struct bt_mesh_model_op movement_server_ops[] = {
-    {OP_VENDOR_MOVEMENT_RECIEVED, BT_MESH_LEN_EXACT(sizeof(struct robot_movement_config)), movement_config_recieved},
-    {OP_VENDOR_START_MOVEMENT, BT_MESH_LEN_EXACT(0), start_movement_recieved},
+    {OP_VND_ROBOT_MOVEMENT_SET, BT_MESH_LEN_EXACT(sizeof(struct robot_movement_set_msg)), movement_config_recieved},
+    {OP_VND_ROBOT_CLEAR_TO_MOVE, BT_MESH_LEN_EXACT(0), start_movement_recieved},
     BT_MESH_MODEL_OP_END,
 };
 
 static struct bt_mesh_model vendor_models[] = {
-    BT_MESH_MODEL_VND(CONFIG_BT_COMPANY_ID, MOVEMENT_SERVER_MODEL_ID, movement_server_ops, NULL, NULL),
+    BT_MESH_MODEL_VND(CONFIG_BT_COMPANY_ID, ROBOT_MOVEMENT_SRV_MODEL_ID, movement_server_ops, NULL, NULL),
 };
 
 /* Composition */
