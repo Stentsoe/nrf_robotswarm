@@ -27,12 +27,19 @@ enum cloud_module_event_type {
 	CLOUD_EVT_CONNECTING,
 	CLOUD_EVT_DISCONNECTED,
 	CLOUD_EVT_CONNECTION_TIMEOUT,
+	CLOUD_EVT_SEND_QOS,
+	CLOUD_EVT_SEND_QOS_CLEAR,
+	CLOUD_EVT_UPDATE_DELTA,
 	CLOUD_EVT_ERROR,
 };
 
 #define CONFIG_NUM_ROBOTS 8
 
 
+struct publish_data {
+	char * ptr;
+	int len;
+};
 
 
 struct cloud_module_event {
@@ -40,6 +47,8 @@ struct cloud_module_event {
 	enum cloud_module_event_type type;
 	union {
 		/** Variable that contains the message that should be sent to cloud. */
+		struct qos_data qos_msg;
+		struct publish_data pub_msg;
 		int err;
 	} data;
 };

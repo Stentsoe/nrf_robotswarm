@@ -9,6 +9,7 @@
 #include <net/aws_iot.h>
 #include <nrf_modem_at.h>
 #include <string.h>
+#include <qos.h>
 
 #define MODULE cloud_module
 
@@ -25,6 +26,8 @@ LOG_MODULE_REGISTER(MODULE, CLOUD_MODULE_LOG_LEVEL);
 #define TOPIC_UPDATE_ACCEPTED "$aws/things/robot_wars_gateway/shadow/update/accepted"
 #define TOPIC_UPDATE_REJECTED "$aws/things/robot_wars_gateway/shadow/update/rejected"
 
+QOS_MESSAGE_TYPES_REGISTER(CLOUD_SHADOW_UPDATE);
+QOS_MESSAGE_TYPES_REGISTER(CLOUD_SHADOW_CLEAR);
 
 struct cloud_msg_data {
 	union {
@@ -246,6 +249,56 @@ switch (evt->type) {
 	}
 }
 
+static void qos_event_handler(const struct qos_evt *evt)
+{
+	switch (evt->type) {
+	case QOS_EVT_MESSAGE_NEW: {
+		// LOG_DBG("QOS_EVT_MESSAGE_NEW");
+		if (evt->message.type == CLOUD_SHADOW_UPDATE) {
+			struct cloud_module_event *event = new_cloud_module_event();
+
+			event->type = CLOUD_EVT_SEND_QOS;
+			event->data.qos_msg = evt->message;
+
+			APP_EVENT_SUBMIT(event);
+		}
+
+		if (evt->message.type == CLOUD_SHADOW_CLEAR) {
+			struct cloud_module_event *event = new_cloud_module_event();
+
+			event->type = CLOUD_EVT_SEND_QOS_CLEAR;
+			event->data.qos_msg = evt->message;
+
+			APP_EVENT_SUBMIT(event);
+		}	
+	}
+		break;
+	case QOS_EVT_MESSAGE_TIMER_EXPIRED: {
+		LOG_DBG("QOS_EVT_MESSAGE_TIMER_EXPIRED");
+
+		struct cloud_module_event *event = new_cloud_module_event();
+
+		event->type = CLOUD_EVT_SEND_QOS;
+		event->data.qos_msg = evt->message;
+
+		APP_EVENT_SUBMIT(event);
+	}
+		break;
+	case QOS_EVT_MESSAGE_REMOVED_FROM_LIST:
+		// LOG_DBG("QOS_EVT_MESSAGE_REMOVED_FROM_LIST");
+
+		if (evt->message.heap_allocated) {
+			LOG_DBG("Freeing pointer: %p", evt->message.data.buf);
+			k_free(evt->message.data.buf);
+		}
+		break;
+	default:
+		LOG_DBG("Unknown QoS handler event");
+		break;
+	}
+}
+
+/* Static module functions. */
 static int setup(void)
 {
 	int err;
@@ -255,6 +308,11 @@ static int setup(void)
 		LOG_ERR("Failed initializing aws, error: %d", err);
 	}
 
+	err = qos_init(qos_event_handler);
+	if (err) {
+		LOG_ERR("qos_init, error: %d", err);
+		return err;
+	}
 
 	return err;
 }
@@ -297,6 +355,28 @@ static void disconnect_cloud(void)
 	// TODO: add disconnect
 }
 
+/* Convenience function used to add messages to the QoS library. */
+static void add_qos_message(uint8_t *ptr, size_t len, uint8_t type,
+			    uint32_t flags, bool heap_allocated)
+{
+	int err;
+	struct qos_data message = {
+		.heap_allocated = heap_allocated,
+		.data.buf = ptr,
+		.data.len = len,
+		.id = qos_message_id_get_next(),
+		.type = type,
+		.flags = flags
+	};
+
+	err = qos_message_add(&message);
+	if (err == -ENOMEM) {
+		LOG_WRN("Cannot add message, internal pending list is full");
+	} else if (err) {
+		LOG_ERR("qos_message_add, error: %d", err);
+		SEND_ERROR(cloud, CLOUD_EVT_ERROR, err);
+	}
+}
 
 /* If this work is executed, it means that the connection attempt was not
  * successful before the backoff timer expired. A timeout message is then
@@ -376,6 +456,41 @@ static void on_sub_state_cloud_connected(struct cloud_msg_data *msg)
 {
 	int err = 0;
 
+	if (IS_EVENT(msg, cloud, CLOUD_EVT_SEND_QOS)) {
+
+
+		struct qos_payload *qos_payload = &msg->module.cloud.data.qos_msg.data;
+
+		struct aws_iot_data message = {
+			.ptr = qos_payload->buf,
+			.len = qos_payload->len,
+			.message_id = msg->module.cloud.data.qos_msg.id,
+			.qos = MQTT_QOS_1_AT_LEAST_ONCE,
+			.topic.type = AWS_IOT_SHADOW_TOPIC_UPDATE,
+		};
+		LOG_INF("%s", qos_payload->buf);
+		err = aws_iot_send(&message);
+		if (err) {
+			LOG_ERR("aws_iot_send, error: %d", err);
+		}
+	}
+	
+	if (IS_EVENT(msg, cloud, CLOUD_EVT_SEND_QOS_CLEAR)) {
+		struct qos_payload *qos_payload = &msg->module.cloud.data.qos_msg.data;
+
+		struct aws_iot_data message = {
+			.ptr = qos_payload->buf,
+			.len = qos_payload->len,
+			.message_id = msg->module.cloud.data.qos_msg.id,
+			.qos = MQTT_QOS_1_AT_LEAST_ONCE,
+			.topic.type = AWS_IOT_SHADOW_TOPIC_DELETE,
+		};
+		LOG_INF("%s", qos_payload->buf);
+		err = aws_iot_send(&message);
+		if (err) {
+			LOG_ERR("aws_iot_send, error: %d", err);
+		}
+	}
 }
 
 static void module_thread_fn(void)
