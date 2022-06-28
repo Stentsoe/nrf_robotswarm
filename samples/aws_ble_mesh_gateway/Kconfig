@@ -16,6 +16,7 @@ config GATEWAY_APP_VERSION_MAX_LEN
 
 rsource "src/modules/Kconfig.modules_common"
 rsource "src/modules/Kconfig.modem_module"
+rsource "src/modules/Kconfig.cloud_module"
 
 endmenu
 

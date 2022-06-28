@@ -9,4 +9,5 @@ target_sources(app PRIVATE
 	ui_module.c
 	modem_module.c
 	modules_common.c
+	cloud_module.c
 )
