@@ -1,0 +1,13 @@
+
+
+menu "Mesh module"
+
+config MESH_MODULE_THREAD_STACK_SIZE 
+    int "Thread stack size"
+    default "2048"
+
+module = MESH_MODULE
+module-str = Mesh module
+source "subsys/logging/Kconfig.template.log_config"
+
+endmenu
