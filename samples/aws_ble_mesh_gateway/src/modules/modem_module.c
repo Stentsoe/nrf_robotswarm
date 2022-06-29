@@ -186,22 +186,6 @@ static int lte_disconnect(void)
 /* Message handler for STATE_DISCONNECTED. */
 static void on_state_disconnected(struct modem_msg_data *msg)
 {
-	if (IS_EVENT(msg, ui, UI_EVT_BUTTON)) {
-		int err;
-		
-		LOG_INF("button event");
-		if ((msg->module.ui.data.button.action == BUTTON_PRESS) &&
-		(msg->module.ui.data.button.num == BTN2)) {
-			
-			err = lte_connect();
-			if (err) {
-				LOG_ERR("Failed connecting to LTE, error: %d", err);
-				SEND_ERROR(modem, MODEM_EVT_ERROR, err);
-				return;
-			}
-		}
-	}
-
 	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_CONNECTING)) {
 		state_set(STATE_CONNECTING);
 	}
@@ -218,21 +202,6 @@ static void on_state_connecting(struct modem_msg_data *msg)
 /* Message handler for STATE_CONNECTED. */
 static void on_state_connected(struct modem_msg_data *msg)
 {
-	// if (IS_EVENT(msg, ui, UI_EVT_BUTTON)) {
-	// 	int err;
-		
-	// 	if ((msg->module.ui.data.button.action == BUTTON_PRESS) &&
-	// 	(msg->module.ui.data.button.num == BTN1)) {
-			
-	// 		err = lte_disconnect();
-	// 		if (err) {
-	// 			LOG_ERR("Failed disconnecting from LTE, error: %d", err);
-	// 			SEND_ERROR(modem, MODEM_EVT_ERROR, err);
-	// 			return;
-	// 		}
-	// 	}
-	// }
-
 	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_DISCONNECTED)) {
 		state_set(STATE_DISCONNECTED);
 	}
