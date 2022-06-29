@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#ifndef _MODULE_STATE_EVENT_H_
+#ifndef _APP_MODULE_EVENT_H_
 #define _APP_MODULE_EVENT_H_
 
 /**
@@ -44,4 +44,4 @@ APP_EVENT_TYPE_DECLARE(app_module_event);
  * @}
  */
 
-#endif /* _MODULE_STATE_EVENT_H_ */
+#endif /* _APP_MODULE_EVENT_H_ */
