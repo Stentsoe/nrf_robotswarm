@@ -135,56 +135,6 @@ static void lte_evt_handler(const struct lte_lc_evt *const evt)
 		SEND_EVENT(modem, MODEM_EVT_LTE_CONNECTED);
 		break;
 	}
-	// case LTE_LC_EVT_EDRX_UPDATE: {
-	// 	LOG_INF("eDRX update event!")
-	// 	break;
-	// }
-	// case LTE_LC_EVT_RRC_UPDATE:
-	// 	LOG_DBG("RRC mode: %s",
-	// 		evt->rrc_mode == LTE_LC_RRC_MODE_CONNECTED ?
-	// 		"Connected" : "Idle");
-	// 	break;
-	// case LTE_LC_EVT_CELL_UPDATE:
-	// 	LOG_DBG("LTE cell changed: Cell ID: %d, Tracking area: %d",
-	// 		evt->cell.id, evt->cell.tac);
-	// 	break;
-	// case LTE_LC_EVT_NEIGHBOR_CELL_MEAS:
-	// 	if (evt->cells_info.current_cell.id != LTE_LC_CELL_EUTRAN_ID_INVALID) {
-	// 		LOG_DBG("Neighbor cell measurements received");
-	// 		send_neighbor_cell_update((struct lte_lc_cells_info *)&evt->cells_info);
-	// 	} else {
-	// 		LOG_DBG("Neighbor cell measurement was not successful");
-	// 		SEND_EVENT(modem, MODEM_EVT_NEIGHBOR_CELLS_DATA_NOT_READY);
-	// 	}
-	// 	break;
-	// case LTE_LC_EVT_LTE_MODE_UPDATE:
-	// 	nw_mode_latest = evt->lte_mode;
-	// 	break;
-	// case LTE_LC_EVT_MODEM_EVENT:
-	// 	LOG_DBG("Modem domain event, type: %s",
-	// 		evt->modem_evt == LTE_LC_MODEM_EVT_LIGHT_SEARCH_DONE ?
-	// 			"Light search done" :
-	// 		evt->modem_evt == LTE_LC_MODEM_EVT_SEARCH_DONE ?
-	// 			"Search done" :
-	// 		evt->modem_evt == LTE_LC_MODEM_EVT_RESET_LOOP ?
-	// 			"Reset loop" :
-	// 		evt->modem_evt == LTE_LC_MODEM_EVT_BATTERY_LOW ?
-	// 			"Low battery" :
-	// 		evt->modem_evt == LTE_LC_MODEM_EVT_OVERHEATED ?
-	// 			"Modem is overheated" :
-	// 			"Unknown");
-
-		// /* If a reset loop happens in the field, it should not be necessary
-		//  * to perform any action. The modem will try to re-attach to the LTE network after
-		//  * the 30-minute block.
-		//  */
-		// if (evt->modem_evt == LTE_LC_MODEM_EVT_RESET_LOOP) {
-		// 	LOG_WRN("The modem has detected a reset loop. LTE network attach is now "
-		// 		"restricted for the next 30 minutes. Power-cycle the device to "
-		// 		"circumvent this restriction. For more information see the "
-		// 		"nRF91 AT Commands - Command Reference Guide v2.0 - chpt. 5.36");
-		// }
-		// break;
 	default:
 		break;
 	}
@@ -269,21 +219,20 @@ static void on_state_connecting(struct modem_msg_data *msg)
 /* Message handler for STATE_CONNECTED. */
 static void on_state_connected(struct modem_msg_data *msg)
 {
-	if (IS_EVENT(msg, ui, UI_EVT_BUTTON)) {
-		int err;
+	// if (IS_EVENT(msg, ui, UI_EVT_BUTTON)) {
+	// 	int err;
 		
-		LOG_INF("button event");
-		if ((msg->module.ui.data.button.action == BUTTON_PRESS) &&
-		(msg->module.ui.data.button.num == BTN1)) {
+	// 	if ((msg->module.ui.data.button.action == BUTTON_PRESS) &&
+	// 	(msg->module.ui.data.button.num == BTN1)) {
 			
-			err = lte_disconnect();
-			if (err) {
-				LOG_ERR("Failed disconnecting from LTE, error: %d", err);
-				SEND_ERROR(modem, MODEM_EVT_ERROR, err);
-				return;
-			}
-		}
-	}
+	// 		err = lte_disconnect();
+	// 		if (err) {
+	// 			LOG_ERR("Failed disconnecting from LTE, error: %d", err);
+	// 			SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+	// 			return;
+	// 		}
+	// 	}
+	// }
 
 	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_DISCONNECTED)) {
 		state_set(STATE_DISCONNECTED);
