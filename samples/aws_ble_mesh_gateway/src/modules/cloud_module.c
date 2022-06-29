@@ -352,7 +352,18 @@ static void connect_cloud(void)
 
 static void disconnect_cloud(void)
 {
-	// TODO: add disconnect
+	int err;
+
+	err = aws_iot_disconnect();
+	if (err) {
+		LOG_ERR("aws_iot_disconnect, error: %d", err);
+		return;
+	}
+
+	connect_retries = 0;
+	qos_timer_reset();
+
+	k_work_cancel_delayable(&connect_check_work);
 }
 
 /* Convenience function used to add messages to the QoS library. */
