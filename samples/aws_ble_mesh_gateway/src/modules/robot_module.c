@@ -18,6 +18,7 @@
 #include "app_module_event.h"
 #include "robot_module_event.h"
 #include "cloud_module_event.h"
+#include "ui_module_event.h"
 
 #include <zephyr/logging/log.h>
 #define ROBOT_MODULE_LOG_LEVEL 4
@@ -533,6 +534,10 @@ static void clear_robot_list(void) {
 	}
 }
 
+
+int n = 1;
+int m = 1;
+
 /* Message handler for STATE_CONFIGURING. */
 static void on_state_cloud_disconnected(struct robot_msg_data *msg)
 {
@@ -565,6 +570,25 @@ static void on_state_cloud_disconnected(struct robot_msg_data *msg)
 /* Message handler for STATE_EXECUTING. */
 static void on_state_cloud_connected(struct robot_msg_data *msg)
 {
+	if (IS_EVENT(msg, ui, UI_EVT_BUTTON)) {
+		
+		if ((msg->module.ui.data.button.action == BUTTON_PRESS) &&
+		(msg->module.ui.data.button.num == BTN1)) {
+			/* Static module functions. */
+			add_robot(n);
+			report_add_robot(n);
+			n++;
+		}
+
+		if ((msg->module.ui.data.button.action == BUTTON_PRESS) &&
+		(msg->module.ui.data.button.num == BTN2)) {
+			
+			/* Static module functions. */
+			LOG_INF("%d", m);
+			report_robot_config(m);
+			m++;
+		}
+	}
 
 	if (IS_EVENT(msg, cloud, CLOUD_EVT_UPDATE_DELTA)) {
 		int err;
