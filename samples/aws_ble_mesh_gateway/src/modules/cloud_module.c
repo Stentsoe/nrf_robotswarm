@@ -15,6 +15,7 @@
 
 #include "modules_common.h"
 #include "modem_module_event.h"
+#include "robot_module_event.h"
 #include "cloud_module_event.h"
 
 #include <zephyr/logging/log.h>
@@ -33,6 +34,7 @@ struct cloud_msg_data {
 	union {
 		struct cloud_module_event cloud;
 		struct modem_module_event modem;
+		struct robot_module_event robot;
 	} module;
 };
 
@@ -161,6 +163,12 @@ static bool app_event_handler(const struct app_event_header *aeh)
 		enqueue_msg = true;
 	}
 
+	if (is_robot_module_event(aeh)) {
+		struct robot_module_event *evt = cast_robot_module_event(aeh);
+
+		msg.module.robot = *evt;
+		enqueue_msg = true;
+	}
 
 	if (enqueue_msg) {
 		int err = module_enqueue_msg(&self, &msg);
@@ -466,6 +474,22 @@ static void on_sub_state_cloud_disconnected(struct cloud_msg_data *msg)
 static void on_sub_state_cloud_connected(struct cloud_msg_data *msg)
 {
 	int err = 0;
+
+	if (IS_EVENT(msg, robot, ROBOT_EVT_CLEAR_ALL)) {
+		add_qos_message("", strlen(""),
+				CLOUD_SHADOW_CLEAR,
+				QOS_FLAG_RELIABILITY_ACK_REQUIRED,
+				false);
+	}
+
+	if (IS_EVENT(msg, robot, ROBOT_EVT_REPORT)) {
+		// char *str = cloud_encode_add_robot(msg->module.robot.data.str);
+		add_qos_message(msg->module.robot.data.str, 
+				strlen(msg->module.robot.data.str),
+				CLOUD_SHADOW_UPDATE,
+				QOS_FLAG_RELIABILITY_ACK_REQUIRED,
+				false);
+	}
 
 	if (IS_EVENT(msg, cloud, CLOUD_EVT_SEND_QOS)) {
 

@@ -22,6 +22,8 @@ extern "C" {
 
 
 enum robot_module_event_type {
+	ROBOT_EVT_REPORT,
+	ROBOT_EVT_CLEAR_ALL,
 	ROBOT_EVT_CONFIGURE,
 	ROBOT_EVT_ERROR,
 };
@@ -49,6 +51,7 @@ struct robot_module_event {
 	enum robot_module_event_type type;
 	union {
 		struct robot_data robot;
+		char* str;
 		int err;
 	} data;
 };
