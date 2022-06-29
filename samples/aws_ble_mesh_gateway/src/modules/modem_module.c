@@ -91,7 +91,6 @@ static bool app_event_handler(const struct app_event_header *aeh)
 
 	if (is_modem_module_event(aeh)) {
 		struct modem_module_event *evt = cast_modem_module_event(aeh);
-		LOG_INF("event %d", evt->type);
 		msg.module.modem = *evt;
 		enqueue_msg = true;
 	}
