@@ -10,4 +10,5 @@ target_sources(app PRIVATE
 	modem_module.c
 	modules_common.c
 	cloud_module.c
+	robot_module.c
 )

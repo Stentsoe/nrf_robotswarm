@@ -9,4 +9,5 @@ target_sources(app PRIVATE
 	ui_module_event.c
 	modem_module_event.c
 	cloud_module_event.c
+	robot_module_event.c
 )
