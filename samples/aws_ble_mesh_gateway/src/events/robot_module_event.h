@@ -22,14 +22,33 @@ extern "C" {
 
 
 enum robot_module_event_type {
+	ROBOT_EVT_CONFIGURE,
 	ROBOT_EVT_ERROR,
 };
 
+struct robot_led_cfg {
+	int r, g, b;
+	int time;
+};
+
+struct robot_cfg {
+	int rotation;
+	int drive_time;
+	int revolutions;
+	struct robot_led_cfg led;
+};
+
+
+struct robot_data {
+	int addr;
+	struct robot_cfg *cfg;
+};
 
 struct robot_module_event {
 	struct app_event_header header;
 	enum robot_module_event_type type;
 	union {
+		struct robot_data robot;
 		int err;
 	} data;
 };

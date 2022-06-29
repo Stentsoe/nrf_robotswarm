@@ -8,6 +8,7 @@
 #include <zephyr/device.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <sys/slist.h>
 #include <stdio.h>
 
 #define MODULE robot_module
@@ -33,9 +34,26 @@ static enum state_sub_type {
 	STATE_EXECUTING,
 } sub_state;
 
+enum robot_state {
+	ROBOT_STATE_WAIT,
+	ROBOT_STATE_CONFIGURING,
+	ROBOT_STATE_CONFIGURED,
+	ROBOT_STATE_EXECUTING,
+};
+
+struct robot {
+	sys_snode_t node;
+	int addr;
+	enum robot_state state;
+	struct robot_cfg cfg;
+};
+
+static sys_slist_t robot_list;
+
 struct robot_msg_data {
 	union {
 		struct app_module_event app;
+		struct ui_module_event ui;
 		struct robot_module_event robot;
 		struct cloud_module_event cloud;
 	} module;
@@ -119,9 +137,57 @@ static bool app_event_handler(const struct app_event_header *aeh)
 	return false;
 }
 
+/* Internal robot list functions */
+static void add_robot(int addr) 
+{
+	struct robot *robot = k_malloc(sizeof(struct robot));
+	robot->addr = addr;
+	sys_slist_append(&robot_list, &robot->node);
+}
+
+static void remove_robot(int addr) 
+{
+	struct robot *robot;
+	SYS_SLIST_FOR_EACH_CONTAINER(&robot_list, robot, node) {
+		if (robot->addr == addr) {
+			break;
+		}
+	}
+	sys_slist_find_and_remove(&robot_list, &robot->node);
+
+	k_free(robot);
+}
+
+static void clear_robot_list(void) {
+	sys_snode_t *node;
+
+	node = sys_slist_get(&robot_list);
+	while (node != NULL) {
+		k_free(CONTAINER_OF(node, struct robot, node));
+		node = sys_slist_get(&robot_list);
+	}
+}
+
 /* Message handler for STATE_CONFIGURING. */
 static void on_state_cloud_disconnected(struct robot_msg_data *msg)
 {
+	if (IS_EVENT(msg, ui, UI_EVT_BUTTON)) {
+		
+		if ((msg->module.ui.data.button.action == BUTTON_PRESS) &&
+		(msg->module.ui.data.button.num == BTN1)) {
+			/* Static module functions. */
+			add_robot(n);
+			n++;
+		}
+
+		if ((msg->module.ui.data.button.action == BUTTON_PRESS) &&
+		(msg->module.ui.data.button.num == BTN2)) {
+			
+			/* Static module functions. */
+			remove_robot(m);
+			m++;
+		}
+	}
 
 	if (IS_EVENT(msg, cloud, CLOUD_EVT_CONNECTED)) {
 			report_clear_robot_list();
@@ -161,6 +227,7 @@ static void module_thread_fn(void)
 	}
 
 	state_set(STATE_CLOUD_DISCONNECTED);
+	sys_slist_init(&robot_list);
 
 	while (true) {
 		module_get_next_msg(&self, &msg);
